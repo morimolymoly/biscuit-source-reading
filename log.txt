@@ -1,0 +1,2 @@
+git log --author="Cody Cutler" --reverse  -- src/ > src.txt
+git log --reverse  -- biscuit/ > biscuit.txt

@@ -1,0 +1,611 @@
+commit 5eef224c8fdbb76d727b018ff068227aac5ebc81
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Sun Dec 28 17:26:02 2014 -0500
+
+    don't stack check recursive pagemapping functions
+
+commit dd59f7588b5a182ee84a9e73d6ba6890129abe32
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Sun Dec 28 17:26:52 2014 -0500
+
+    disable profiling
+
+    it uses callers() which is broken for some reason (may be because go assumes
+    stack size of 3 pages on linux?). track this down!
+
+commit b5b01c8fdc556bede462a2f3dbdf285b81252608
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Sun Dec 28 17:28:35 2014 -0500
+
+    lie about number of cores
+
+commit 81c40888fe49d25617643aa9ed0957547b365794
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Sun Dec 28 17:38:32 2014 -0500
+
+    virtual mem, interrupts, multitasking, and runtime initialization
+
+commit 7a444c5579ed8421834a89eabef6e7d687d21cc4
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Sun Dec 28 17:40:23 2014 -0500
+
+    print in throw()
+
+commit 9b6d828a03d83528255289abe24e57ad789d76d5
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Sun Dec 28 17:41:49 2014 -0500
+
+    add our entry point
+
+commit 5ac4bac1867c1cf661af4b69fb74235509c930dd
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Sun Dec 28 17:42:06 2014 -0500
+
+    hook syscalls for hackmode
+
+    exit, write, usleep, clock_gettime, nanotime, sigprocmask, sigaction, mmap,
+    munmap, futex, clone, and sigaltstack
+
+commit 91caf7c93dd63ddc70302d2d28302f364674ac1f
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Sun Dec 28 17:43:10 2014 -0500
+
+    hook general syscall interface provided in "syscall" package
+
+    only handles write for now
+
+commit e57736adbfb87735340ba8cf252c3868e15a39a3
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Sun Dec 28 17:25:15 2014 -0500
+
+    lie about version string
+
+    the version of dist we use requires that the go code is in a mercurial
+    repository in order to choose a version number for the build.
+
+    we use git now so lie about the version number
+
+commit 30bce134e9a7fdc79c647cf9e6e701c245196ba3
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Mon Jan 5 15:32:49 2015 -0500
+
+    correctly save 64bit fsbase
+
+commit ce32db57a5b3b4e2818c11f7208bfc8ad8ab5798
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Mon Jan 5 15:33:15 2015 -0500
+
+    hook runtime-usleep, tweak timings
+
+    will set timings correctly later
+
+commit 83f0f9ac15495b5f7988a4b56347020669313612
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Mon Jan 5 16:03:00 2015 -0500
+
+    noop madvise
+
+commit 4d531fa41f2d0e26dd4ed9d61df33b4f60953e1e
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Wed Jan 7 11:33:40 2015 -0500
+
+    noop yield
+
+commit 37c11f34743cce6a737ed9500c87984e3cc4df8c
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Wed Jan 7 12:36:58 2015 -0500
+
+    toy ip code
+
+commit ad6d42827ad91457376e211cb4df704b41368f24
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Mon Jan 12 11:05:56 2015 -0500
+
+    print wrapping
+
+commit 899aeccf8e0b31b67b6e3f0fdb7a992eae99ccd3
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Mon Jan 12 11:47:45 2015 -0500
+
+    nits
+
+commit 0ef3145e9227a6e2af9b3384357e920f30ff89b5
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Mon Jan 12 18:11:13 2015 -0500
+
+    e820 map for phys mem allocation
+
+    that was not fun
+
+commit 73e1c51794b53774e0455bea0e94c7e546302493
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Tue Jan 13 12:07:24 2015 -0500
+
+    less hacky nanotime
+
+commit 12347a7f175c3bd775a0628d4debf348df95f9d6
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Tue Jan 13 14:19:38 2015 -0500
+
+    x
+
+commit c1ee664573dc563f1c65e92230cfd6205fc42ed8
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Tue Jan 13 21:44:37 2015 -0500
+
+    baby go scheduler
+
+    unfortunately, the trap handler itself is probably not that useful to write in
+    go since, as go uses cooperative threads, a go trap handler interrupting its
+    own go code is likely to cause problems.
+
+    export helper functions too
+
+commit e0ddec7ec7b0dfbe52f855f75b7d878d4fa6eb32
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Thu Jan 15 18:11:25 2015 -0500
+
+    futex
+
+    go uses futexs to sleep
+
+commit 40dab6659da8f4a78bc994df24ae8446caf3dec5
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Thu Jan 15 18:18:39 2015 -0500
+
+    checkpoint bizarre go traphandler/scheduler
+
+    need an idle OS proc if we want to handle faults caused by kernel go code which
+    require immediate service. set maxprocs = 2 and do other stuff to make it work.
+
+commit 69fee87513877a754faafd75c810b1a3a09928f9
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Tue Jan 20 11:29:01 2015 -0500
+
+    silly bugfix
+
+commit a9476ab6c941c56ad37dc2c46c9662c320b76767
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Tue Jan 20 11:31:42 2015 -0500
+
+    new trap/scheduling design and syscall stub
+
+commit 418cba6989018144ba0a8f8e4affb65cd41fcad8
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Tue Jan 20 16:31:15 2015 -0500
+
+    checkpoint user programs + syscalls
+
+    moving user programs to ring 3 next
+
+commit 373f222385a59c8e30b980c817d63c94712f40a9
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Tue Jan 20 19:20:50 2015 -0500
+
+    put user programs in ring 3
+
+    the test user program will crash unless the page tables are marked PTE_U.
+
+commit 50ecbbdbd584d578e325aa6bc8fcbf6ec6ee2cc1
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Wed Jan 21 16:31:09 2015 -0500
+
+    go virtual memory management
+
+    this will be useful for user program setup.  cleanup types too.
+
+commit eee205a1aa4dbd4e9080398be06a0384ee10f8f3
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Thu Jan 22 12:50:12 2015 -0500
+
+    finish test user program
+
+    uses its own page tables now.
+
+commit 77bb8f3ddd168e95bea2b7951ed97382efb0e799
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Thu Jan 22 13:05:50 2015 -0500
+
+    whoops
+
+commit 64c545e1227a47cd047a5aa41e257f34a8387597
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Thu Jan 22 14:01:34 2015 -0500
+
+    more interesting test program
+
+    reschedule after syscall, terminate if page fault
+
+commit 357e037f6e8c9f2487c39fce4d6beb897932284a
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Thu Jan 22 15:26:20 2015 -0500
+
+    always switch page maps during context switch
+
+commit 2857855a2774025a2be6a5236c49ced816c4005f
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Thu Jan 22 15:37:41 2015 -0500
+
+    ucookie -> pid
+
+commit 19ee6ffbb2a0706e341df96bfe64f7cb45c831ce
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Thu Jan 22 15:53:34 2015 -0500
+
+    processes
+
+    reclaim memory from killed procs using GC(). cool!
+
+commit 814f7e20607c23ef98b7d5906fbde56db9efc9d5
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Fri Jan 23 19:33:35 2015 -0500
+
+    fix evil non-deterministic bug
+
+    because the go kernel runs in ring 0 and grows its own stack, the stack while
+    handling a timer interrupt may not be mapped in every process. thus, during a
+    context switch, the ret instruction in the lcr3 function faults. because the
+    stack is no longer valid, a triple-fault/reboot results.
+
+    one fix is to inline lcr3. that way the stack of the interrupted task is not
+    used after the new page map is loaded.
+
+commit 8f6094387dede531b61a46fbf344bb03da756e97
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Fri Jan 23 19:39:52 2015 -0500
+
+    use the IST for double-faults
+
+    the IST is an awesome feature only available in long-mode. it makes the
+    processor switch stacks unconditionally, regardless of new/old privilege level.
+
+    thanks to the IST, buggy kernel code or odd kernels that grow their own stacks
+    don't triple-fault, but helpfully double-fault.
+
+commit 311b76b148c5828841f322a8780f849fef719bf1
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Fri Jan 23 19:44:31 2015 -0500
+
+    small bugs, debug code
+
+commit 1409579d88b7da6337d98acfb2fd984fc747389c
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Mon Jan 26 19:35:57 2015 -0500
+
+    fix write
+
+    panic tracebacks seem to work now
+
+commit a5a9d469f5e63b904b81d81754933b5912fea173
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Fri Jan 23 23:30:39 2015 -0500
+
+    elf user programs
+
+    any elf object in user/ will be inserted into the kernel as an exec'able
+    binary.
+
+    it would be nice to strictly separate address ranges of kernel and user
+    programs.
+
+commit 8b3aed756594ec41af10e42c878c05878ef27292
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Wed Jan 28 10:00:39 2015 -0500
+
+    newlines
+
+commit d14a07795fbfeb289f67a0ff02b0eb4eca9c3f40
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Wed Jan 28 11:07:33 2015 -0500
+
+    remove Death()
+
+commit af4dfcf8673af71c3c914043debc982c6a5a0390
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Thu Jan 29 18:15:00 2015 -0500
+
+    SMP
+
+    find and initialize cpus. the test boots up all found cpus (controllable with
+    CPUS env variable) each of which print a hello message, spin for a moment, and
+    then fault to make sure the IDT/GDT are properly setup.
+
+    there is no synchronization yet. next step is to make the runtime/kernel
+    thread-safe.
+
+commit 0a2a840b325d1a9af400eb66f5d9a1a401a8775f
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Fri Jan 30 11:21:38 2015 -0500
+
+    disable newlines for explicit panic
+
+commit 4fcb3dc4cfefff837f3bd453d988314e104d91f8
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Fri Jan 30 12:36:59 2015 -0500
+
+    setup AP stacks
+
+    enter the terrible world of multicore
+
+commit 3af60b7bc16a62b07aaefc4089da7c5d65ef1d30
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Fri Jan 30 15:32:01 2015 -0500
+
+    initialize lapic/TSS on APs
+
+    shuffle stuff around so APs can reuse init code
+
+commit ba56baba55a83523ba96b67faa97578208fc3db4
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Sun Feb 1 15:44:08 2015 -0500
+
+    serial console driver
+
+    now i can actually debug biscuit over slow connection remotely.
+
+commit cffb62b5e4b509ab76eb134641d137bfd9c18217
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Sun Feb 1 15:45:18 2015 -0500
+
+    don't set G (granularity) in segment descriptors
+
+    although segment limits are mostly ignored in long mode, the TSS limit is not
+    ignored since it is necessary to determine whether or not there is an IO bitmap
+    (bitten by the damn IO bitmap again!)
+
+commit 53896135ff6a10c16c3f68cca952ebf21ed258d0
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Mon Feb 2 19:04:30 2015 -0500
+
+    increase stackguard to 768 bytes
+
+    the largest stack size of all trap paths is > 512 bytes
+
+commit 52007cc98cb8963c1f63ef69cd35112d77b9daf3
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Mon Feb 2 19:04:18 2015 -0500
+
+    parallel runtime scheduler
+
+    there were many bugs. discovered a bug in the plan9 C compiler and the plan9
+    assembler on the way.
+
+    now kernel parallelism should be easy. scheduling code desperately needs
+    cleanup; will do this soon.
+
+    hack_futex has been band-aid fixed -- need to fix it properly later.
+
+commit 33ae3648201e48c0e259fe6dff15b1af6aaca4cf
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Mon Feb 2 20:30:09 2015 -0500
+
+    raise GOMAXPROCS and NTHREADS to 24
+
+commit 39dad4bd6d345346414167243e5e091da239aeb8
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Wed Feb 4 15:43:46 2015 -0500
+
+    evil bugfixes, fix futex
+
+    all bugs were races in the scheduler/trap handling. they were hidden by a slow
+    implementation of futex. there were 3 races:
+
+    1- since go code is in ring 0, timer interrupts during go code are taken on go
+    stacks. consider the following events on CPU1:
+            - takes a timer interrupt while executing go process alpha
+            - acquires the scheduling lock
+            - marks alpha as runnable
+            - finds and marks a new process as running
+            - releases the lock
+    then before CPU 1 has time to iret to the new process and stop using alpha's
+    stack, CPU 2 starts running alpha and itself takes a timer interrupt
+    overwriting CPU 1's stack.
+
+    solve this by using the IST to always take timer interrupts on kernel stacks.
+    alternatively, we could release the lock in trapret() once the stack will no
+    longer be used, but it seems better to always take traps on the interrupt stack
+    anyway.
+
+    2- user application page faults. trap handler running on CPU 1 posts exception
+    to go kernel, which is running on CPU 2, and go kernel immediately responds by
+    terminating the application, reclaiming the page tables while CPU 1 is using
+    them.
+
+    solve this by changing to the kernel's page tables whenever posting a trap that
+    may result in application termination.
+
+    3- when a process on CPU 1 is trying to go to sleep for a small amount of time
+    and marks itself sleeping, another CPU wakes and starts running the process
+    before CPU 1 has yielded and stored the process' state.
+
+    solve this by marking a process as sleeping in the timer interrupt, not
+    futex(). thus a CPU trying to wake processes up will not mark the process as
+    runnable yet.
+
+    in conclusion, i am desperately trying to simplify the design!
+
+commit 0c537359567f46404c57e008ed45e8d4e6d9b840
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Wed Feb 4 17:07:19 2015 -0500
+
+    actually fix futex. whoops
+
+commit 4f03c124a56f2eef79bac417c21fb7c55d1fd7d5
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Thu Feb 5 15:40:50 2015 -0500
+
+    write syscall
+
+commit b3f3d16dd6868385cff7eebd7bff71591191276d
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Thu Feb 5 17:36:11 2015 -0500
+
+    don't destroy process
+
+    needs to be fixed correctly later
+
+commit 517ccb27973338720f056dc0e19ad3b0dcb97dec
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Fri Feb 6 18:47:38 2015 -0500
+
+    use IST for syscall and page faults
+
+commit 27a8fd492d5c8cd9bdd4be2452c37a199f90eccb
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Tue Feb 10 00:32:44 2015 -0500
+
+    fix memprofiling
+
+commit 735431be5d22041d282e226ff9367dfd72142c3e
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Tue Feb 10 20:13:11 2015 -0500
+
+    yield in usleep instead of spinning
+
+commit 0b16699f931fa679ec056e0fdf1b6d2c4a2b61d5
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Tue Feb 10 19:58:15 2015 -0500
+
+    stack check invlpg
+
+commit 982ce795749af1fe1c23f4e6dad5e03e74449a6a
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Tue Feb 10 20:10:26 2015 -0500
+
+    stack dump goroutine too, in case it used onM
+
+commit 4d44bd0305fd4e497963415198ec4bde5a349913
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Tue Feb 10 20:11:32 2015 -0500
+
+    memory checker (disabled)
+
+    sanity checks pages allocated before giving them to go. it writes the page with
+    a poison value and then verifies that the page retained the poison value.
+
+commit b7d4fd1d30f9ebfd3cec4c5893a0969692a0a204
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Tue Feb 10 20:14:59 2015 -0500
+
+    halt other cores when any goroutine calls exit()
+
+commit f645ae8782478b13033c123fb8524050b54fbd08
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Tue Feb 10 20:18:24 2015 -0500
+
+    make gothrow work again, now that panic works
+
+commit fb559b6811b566960600daa383f55a2c534ed3d6
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Tue Feb 10 19:56:10 2015 -0500
+
+    horrible goddamn bug
+
+    go uses SSE non-temporal moves for fast copying and zeroing of newly allocated
+    objects. if you are very unlucky, a zero-initializing go routine may be context
+    switched after a copying go routine. since my scheduler did not save/restore
+    FPU/SSE state, the SSE registers used were not saved/restored on a context
+    switch.
+
+    the end result was newly allocated maps having segments of 128 non-zero bytes
+    and copied objects having 128 byte segments that were zeroed.
+
+    save restore SSE state, and fix a few other bugs like serial access to mmaps,
+    trap queue, and syscalls with locks (i'll remove these coarse locks next).
+
+    also do go routine stack checks manually in C stubs -- the stack check inserted
+    by the compiler panicks if any C code runs on a go routine stack. this makes me
+    nervous because i'm not exactly sure why...
+
+    goodbye four days of my life
+
+commit 22e233447dd3b04efa6598262bd43b5abda6e6d6
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Wed Feb 11 12:52:21 2015 -0500
+
+    remove paranoia code, better fork test
+
+commit b8c90090d3a8ff80e240c92c6b448123083dac8a
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Thu Feb 12 11:40:39 2015 -0500
+
+    zero bss correctly in bootloader
+
+commit 45823c67235655908504cff858bbc1560d1a6d6e
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Thu Feb 12 11:53:47 2015 -0500
+
+    lockfree per-cpu interrupt circular buffers
+
+commit bda6cd8ad16cd0a4bbaf019764fc2744e13b9081
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Thu Feb 12 17:20:06 2015 -0500
+
+    always switch to kernel page map
+
+    this is ok because CPUs will always switch pmaps anyway as the interrupting
+    process cannot be serviced immediately.
+
+commit 6cdc5a371a01a03ea35586b020388e0d6536f414
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Fri Feb 13 15:03:36 2015 -0500
+
+    irqs
+
+    prep for ata pio driver
+
+commit 5c0351af5230d7b8b13635ee0402a5359372ba18
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Sun Feb 15 20:47:30 2015 -0500
+
+    ide disk driver and ide server go-routine daemon
+
+    kernel code submits requests for ide reads/writes through a channel. its very
+    straight-forward! we get kernel thread sleeping/wakeup and safe queue access
+    for free via go channels. see ide_test() for example code demonstrating how to
+    use the ide daemon.
+
+commit d88b83568749b086e731f03d965081637808ae64
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Mon Feb 16 07:27:27 2015 -0500
+
+    x
+
+commit 9dad0d2841b557f0192313614a60ce3320d75f8a
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Mon Feb 16 09:41:21 2015 -0500
+
+    simplify trap/yieldy
+
+commit 4ca384e0e327d42a2352585f9dcfe36775e0d55a
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Mon Feb 16 18:28:32 2015 -0500
+
+    don't try to take spinlock in hack_exit()
+
+commit 40a8b6d7fc07abcb952bee2752537f0774952aea
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Tue Feb 17 12:49:04 2015 -0500
+
+    simplify futex shit again
+
+    there is less concurrency now as the futexlock is held across the soft
+    interrupt to yield, but the code becomes simpler. seems to make little
+    difference for performance.
+
+commit b37c4692d42a6e6a9e0ddc36ad951c640f4631fa
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Mon Feb 23 15:47:27 2015 -0500
+
+    make halt work
+
+commit c14beb90191e74163c20c48596a5eed576fbc664
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Mon Feb 23 19:23:22 2015 -0500
+
+    journaling fs
+
+    neat! fs syscalls talk to the logging daemon for admission control and
+    committing.
+
+    haven't written the recovery procedure yet. poorly tested so far too.

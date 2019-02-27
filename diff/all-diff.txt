@@ -1,0 +1,1689 @@
+commit e603656259d82de6159afa9cef2a3c0814080aaa
+Author: Cody Cutler <ccutler@csail.mit.edu>
+Date:   Wed Nov 26 00:28:53 2014 -0500
+
+    initial commit
+
+    JOS bootloader. everything is in C. ha!
+
+    probably only compiles on OpenBSD
+
+commit 9ddff3ac353c666716c29e904aa7da5b04bfad28
+Author: Cody Cutler <ccutler@csail.mit.edu>
+Date:   Sun Nov 30 08:54:43 2014 -0500
+
+    prep for 64bit
+
+commit 115b4acb928caa1f11d9a270d00fea6d6b890f89
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Mon Dec 1 10:02:05 2014 -0500
+
+    make go disk
+
+commit 4af8fbdef2aa4ae45476ddfb357c73bfa2bd6fbb
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Mon Dec 1 11:00:50 2014 -0500
+
+    chentry
+
+commit 27aa1a0f3b6e1b25b781e049aad5036240288a6f
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Mon Dec 1 11:55:35 2014 -0500
+
+    make sure elf header is preserved
+
+    because i will use it in the go runtime init code
+
+commit 965aef1ef0c12348a6831a4059ba3b0ed541c039
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Mon Dec 1 18:46:42 2014 -0500
+
+    bss hack
+
+    save bss start and end so i can zero them in the go runtime init code. can't do
+    it in the bootloader because there isn't enough room.
+
+    it would make memory management easier if the bootloader loaded the kernel
+    segments into physically contiguous memory and then setup a page directory that
+    mapped the virtual addresses to the physical addresses. then we could also do
+    the bss zeroing before loading.
+
+    since we are low on room though, the bootloader would need to be more than one
+    sector and thus we would have to change the bootloader to load the rest of
+    itself. i'll do this later.
+
+commit 0c70b0e4653bf543abe7dd7579bbcfa72dea9425
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Mon Dec 1 19:12:36 2014 -0500
+
+    first go patch
+
+    adds our hacked runtime init code (make it the entry point using chentry) which
+    only clears the bss and enables paging right now.
+
+commit 0c090b247b7909be6429026804b143086943b350
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Mon Dec 1 22:22:30 2014 -0500
+
+    multi-sector bootloader
+
+    the first sector loads the rest of itself and then the kernel.
+
+    this will be useful to load the kernel more efficiently in memory.
+
+commit b7e4b15eddfbe5f00097c709ca5b1f207088154b
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Tue Dec 2 10:23:51 2014 -0500
+
+    paging in bootloader
+
+    bootloader allocates pages for the kernel contiguously, maps them, and enables
+    paging. this makes it easier to manage memory and doesn't assume anything about
+    the placement of the kernel's PT_LOAD segments.
+
+commit 7e69145e85fe538ff6708506c38456811308f408
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Tue Dec 2 10:26:53 2014 -0500
+
+    x
+
+commit c331e93fefe6dfe66d55ebfe562e04de70c03f17
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Tue Dec 2 19:08:17 2014 -0500
+
+    64-bit/paging bootloader
+
+    no painting ourselves into a 32-bit corner
+
+commit a8c2fc0157ea360adaa45ff04a996ec490febcd6
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Tue Dec 2 21:03:59 2014 -0500
+
+    sweet bug
+
+commit 15bedf681688d81a78ffb280143c25fdbb4b71c9
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Tue Dec 2 21:49:54 2014 -0500
+
+    64bit chentry
+
+commit 27d356eff2c253871187a8a0b4e651a8d31e4ac2
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Tue Dec 2 21:50:10 2014 -0500
+
+    switch to amd64 go
+
+commit 110dc34776b3739e6dd59e18649e2962fb189fea
+Author: Cody Cutler <ccutler@csail.mit.edu>
+Date:   Thu Dec 4 10:07:16 2014 -0500
+
+    x
+
+commit f16cf4eabe2547424cb9c75123bca8e0b98eb3a4
+Author: Cody Cutler <ccutler@csail.mit.edu>
+Date:   Thu Dec 4 19:48:31 2014 -0500
+
+    another sweet bug
+
+    cannot clobber ebx since ebx is reserved on 386 with PIC. gcc errors
+    instead of dealing with it for you since it may have surprising
+    performance results if you are unaware that ebx is reserved.
+
+commit 27c91785b71cd8ebadabc2704d2b562dbc04ff2d
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Mon Dec 8 11:03:33 2014 -0500
+
+    checkpoint segmentation code
+
+    never ever ever use plan9 compiler/assembler for systems code; they do not
+    support data alignment or struct packing.
+
+commit fb34baf0d8a147bd1630a5885f9450e7398d9a12
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Mon Dec 8 16:07:28 2014 -0500
+
+    finish segmentation and thus TLS setup
+
+    took me many hours to figure out why far ret to fix CS was faulting. since the
+    default operand size of long mode is 32-bits, lret exptected the far pointer to
+    be one quad on the top of the stack that looked like: 0x0000SSSSPPPPPPPP where
+    S are the segment bits and P are the address bits.
+
+    i was pushing two quads, first the segment then the address. that only works if
+    you use lret with REX.W prefix (lretq).
+
+commit 21cbbf98bf281a7603314eee4dfd8f3cbcb8cf77
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Mon Dec 8 20:35:52 2014 -0500
+
+    give kernel new stack + guard page
+
+commit 093483cb54a3c672fba2fc9e8f8f207b00bfb77c
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Tue Dec 9 16:59:21 2014 -0500
+
+    64bit interrupts
+
+    useful for debugging
+
+commit ef78116dc3c756468ebff1800ad6834c88501502
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Tue Dec 9 18:29:55 2014 -0500
+
+    initialize x87 FPU
+
+    i dont know whether the runtime depends on FP arithmetic
+
+commit adab2c77653a2ee0cbef752f72ffa0e7a10985f3
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Tue Dec 9 19:12:34 2014 -0500
+
+    args, fake osinit
+
+    runtime init is nearly done! only schedinit remains
+
+commit 8c9494dbfbd7a4bd5f67c78d23e31c4e524e1af0
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Wed Dec 10 18:34:35 2014 -0500
+
+    set WP too
+
+commit b960c6718cf44dc6d639b6239305afee23c0c30c
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Thu Dec 11 11:13:24 2014 -0500
+
+    alloc bugfix
+
+commit 0f121fbc25619323033e15caeae27d02abd6fd54
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Thu Dec 11 11:24:14 2014 -0500
+
+    recursive pml4 mapping
+
+commit 5461f9f3cbad091b4b2adff3fe8f0a2850aef138
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Thu Dec 11 12:40:25 2014 -0500
+
+    actually set wp bit instead of fsgsbase
+
+    on the plus side, i learned about the wr[fg]sbase instruction.
+
+commit 129c91ab21a8a0cd2b297bff8f1380951c8771e8
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Thu Dec 11 13:19:53 2014 -0500
+
+    physical mem allocator and pgdir_walk
+
+    for the second time in my life, somewhat complicated code worked exactly as
+    expected on the first try. can i have a phd now?
+
+commit e20f45f2e4df5bfabf004751448d67f4837516f6
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Thu Dec 11 20:29:12 2014 -0500
+
+    hacked m{,un}map, pgdir_walk bugfix
+
+    ammusingly, my celebrated pgdir_walk was completely broken
+
+commit d1ebc19a9ef8e6bac364d91770e609999f60d6f6
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Thu Dec 11 23:31:12 2014 -0500
+
+    x
+
+commit a636254d2b5ef7fc7c644c5a97adbf336e851d31
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Sun Dec 14 22:40:00 2014 -0500
+
+    pass schedinit()
+
+    fix vm stuff and hook m{,un}map. several other hacks that should be remedied
+    eventually:
+
+    - disable profiling; it calls callers() which breaks somehow, probably because
+      gentraceback assumes something about the stack. track this down!
+
+    - comment out some calls to nanotime(); it was used to figure out when to poll
+      the network and when to unmap pages
+
+    - lie about number of cpus: 1
+
+commit bbb6d0996381f9f5df5bdeee65f4b3e043c9f8dd
+Author: Cody Cutler <ccutler@csail.mit.edu>
+Date:   Sat Dec 20 12:19:16 2014 -0500
+
+    move notes to doc-biscuit
+
+commit 733a5d305f2cbdbbe26506bc0173bd49d5ff4be6
+Author: Cody Cutler <ccutler@csail.mit.edu>
+Date:   Sun Dec 21 10:52:04 2014 -0500
+
+    make gcc happy by not clobbering reserved PIC reg on 32bit (ebx)
+
+commit 26dc84ad239de17143b7da046586f11bbab14554
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Sun Dec 21 22:09:16 2014 -0500
+
+    don't cache writes to VGA memory
+
+commit a0a80a6b01fd7e599ff57b8e44114753c5581d7f
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Mon Dec 22 00:27:04 2014 -0500
+
+    checkpoint LAPIC/8259a initialization
+
+    need timer interrupt to support clone()
+
+commit bb563d5e0d402f56c92db0b62c234c57c4b9a354
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Mon Dec 22 12:53:23 2014 -0500
+
+    timer interrupt init and trapret
+
+    hook clone and write, noop sigprocmask, sigaltstack, and sigaction
+
+commit 215573e5127e143462767917a3d1f88924e96b4f
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Mon Dec 22 15:57:40 2014 -0500
+
+    multitasking, start clone
+
+commit 281dc0d458fb0667a7226090255d4abf2b1571e4
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Wed Dec 24 03:14:42 2014 -0500
+
+    save/restore fs base, clone
+
+commit fc32a5b86326f4ad9dc9dd9a1f83370cfc29d848
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Sat Dec 27 18:24:23 2014 -0500
+
+    hello world kernel works
+
+    not much else will
+
+commit 433bbf4b8572aeb567aaff02aa2bd888c97abc49
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Sat Dec 27 18:55:45 2014 -0500
+
+    remove old header
+
+commit e463ca8137d393e1286aaf137908cb5c6ef17f24
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Sun Dec 28 17:23:54 2014 -0500
+
+    fix makefile for new layout
+
+commit 5eef224c8fdbb76d727b018ff068227aac5ebc81
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Sun Dec 28 17:26:02 2014 -0500
+
+    don't stack check recursive pagemapping functions
+
+commit dd59f7588b5a182ee84a9e73d6ba6890129abe32
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Sun Dec 28 17:26:52 2014 -0500
+
+    disable profiling
+
+    it uses callers() which is broken for some reason (may be because go assumes
+    stack size of 3 pages on linux?). track this down!
+
+commit b5b01c8fdc556bede462a2f3dbdf285b81252608
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Sun Dec 28 17:28:35 2014 -0500
+
+    lie about number of cores
+
+commit 81c40888fe49d25617643aa9ed0957547b365794
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Sun Dec 28 17:38:32 2014 -0500
+
+    virtual mem, interrupts, multitasking, and runtime initialization
+
+commit 7a444c5579ed8421834a89eabef6e7d687d21cc4
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Sun Dec 28 17:40:23 2014 -0500
+
+    print in throw()
+
+commit 9b6d828a03d83528255289abe24e57ad789d76d5
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Sun Dec 28 17:41:49 2014 -0500
+
+    add our entry point
+
+commit 5ac4bac1867c1cf661af4b69fb74235509c930dd
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Sun Dec 28 17:42:06 2014 -0500
+
+    hook syscalls for hackmode
+
+    exit, write, usleep, clock_gettime, nanotime, sigprocmask, sigaction, mmap,
+    munmap, futex, clone, and sigaltstack
+
+commit 91caf7c93dd63ddc70302d2d28302f364674ac1f
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Sun Dec 28 17:43:10 2014 -0500
+
+    hook general syscall interface provided in "syscall" package
+
+    only handles write for now
+
+commit e57736adbfb87735340ba8cf252c3868e15a39a3
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Sun Dec 28 17:25:15 2014 -0500
+
+    lie about version string
+
+    the version of dist we use requires that the go code is in a mercurial
+    repository in order to choose a version number for the build.
+
+    we use git now so lie about the version number
+
+commit 30bce134e9a7fdc79c647cf9e6e701c245196ba3
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Mon Jan 5 15:32:49 2015 -0500
+
+    correctly save 64bit fsbase
+
+commit ce32db57a5b3b4e2818c11f7208bfc8ad8ab5798
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Mon Jan 5 15:33:15 2015 -0500
+
+    hook runtime-usleep, tweak timings
+
+    will set timings correctly later
+
+commit 83f0f9ac15495b5f7988a4b56347020669313612
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Mon Jan 5 16:03:00 2015 -0500
+
+    noop madvise
+
+commit 4d531fa41f2d0e26dd4ed9d61df33b4f60953e1e
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Wed Jan 7 11:33:40 2015 -0500
+
+    noop yield
+
+commit 39a0208c8be70ec3064bd70f4047d869182d44d2
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Wed Jan 7 11:39:12 2015 -0500
+
+    go threads
+
+    no parallelism though since we only use one cpu currently
+
+commit 37c11f34743cce6a737ed9500c87984e3cc4df8c
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Wed Jan 7 12:36:58 2015 -0500
+
+    toy ip code
+
+commit 2d2e2eb997a31c95accd25355bd8377dab5dcee1
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Thu Jan 8 17:03:04 2015 -0500
+
+    parallel write
+
+commit ca20cfd5d989d5f939bb9cfb403486ecf2ac71bb
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Fri Jan 9 11:28:10 2015 -0500
+
+    rcu toy
+
+commit e2b90b28460c5c182a19ba4fccc0fbd9450bafbb
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Fri Jan 9 14:14:13 2015 -0500
+
+    route table rcu
+
+commit ad6d42827ad91457376e211cb4df704b41368f24
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Mon Jan 12 11:05:56 2015 -0500
+
+    print wrapping
+
+commit 3e42892789cdd1ba6416e7a3a3073ad6efea0547
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Mon Jan 12 11:12:04 2015 -0500
+
+    remove unnecessary go patches
+
+commit 899aeccf8e0b31b67b6e3f0fdb7a992eae99ccd3
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Mon Jan 12 11:47:45 2015 -0500
+
+    nits
+
+commit 0ef3145e9227a6e2af9b3384357e920f30ff89b5
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Mon Jan 12 18:11:13 2015 -0500
+
+    e820 map for phys mem allocation
+
+    that was not fun
+
+commit aef9fe1364ada06733c4cf6ddc6fe11ee93e7b6f
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Tue Jan 13 09:56:59 2015 -0500
+
+    x
+
+commit 73e1c51794b53774e0455bea0e94c7e546302493
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Tue Jan 13 12:07:24 2015 -0500
+
+    less hacky nanotime
+
+commit 12347a7f175c3bd775a0628d4debf348df95f9d6
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Tue Jan 13 14:19:38 2015 -0500
+
+    x
+
+commit e86ca876973faa3f8c2dbeac16756907d5a02d30
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Tue Jan 13 15:09:27 2015 -0500
+
+    copy main.go to tests.go
+
+commit c1ee664573dc563f1c65e92230cfd6205fc42ed8
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Tue Jan 13 21:44:37 2015 -0500
+
+    baby go scheduler
+
+    unfortunately, the trap handler itself is probably not that useful to write in
+    go since, as go uses cooperative threads, a go trap handler interrupting its
+    own go code is likely to cause problems.
+
+    export helper functions too
+
+commit e0ddec7ec7b0dfbe52f855f75b7d878d4fa6eb32
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Thu Jan 15 18:11:25 2015 -0500
+
+    futex
+
+    go uses futexs to sleep
+
+commit 40dab6659da8f4a78bc994df24ae8446caf3dec5
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Thu Jan 15 18:18:39 2015 -0500
+
+    checkpoint bizarre go traphandler/scheduler
+
+    need an idle OS proc if we want to handle faults caused by kernel go code which
+    require immediate service. set maxprocs = 2 and do other stuff to make it work.
+
+commit 69fee87513877a754faafd75c810b1a3a09928f9
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Tue Jan 20 11:29:01 2015 -0500
+
+    silly bugfix
+
+commit a9476ab6c941c56ad37dc2c46c9662c320b76767
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Tue Jan 20 11:31:42 2015 -0500
+
+    new trap/scheduling design and syscall stub
+
+commit 418cba6989018144ba0a8f8e4affb65cd41fcad8
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Tue Jan 20 16:31:15 2015 -0500
+
+    checkpoint user programs + syscalls
+
+    moving user programs to ring 3 next
+
+commit 373f222385a59c8e30b980c817d63c94712f40a9
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Tue Jan 20 19:20:50 2015 -0500
+
+    put user programs in ring 3
+
+    the test user program will crash unless the page tables are marked PTE_U.
+
+commit 50ecbbdbd584d578e325aa6bc8fcbf6ec6ee2cc1
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Wed Jan 21 16:31:09 2015 -0500
+
+    go virtual memory management
+
+    this will be useful for user program setup.  cleanup types too.
+
+commit 5916a03063a17759f366b5a1b358295fa4f7fdb7
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Wed Jan 21 18:28:50 2015 -0500
+
+    don't use Vtop for every allocation and bugfix
+
+    an interesting thing about this code is that there is no physical memory
+    allocator.  it uses the garbage collector to allocate pages and keeps
+    references to them in per-process maps of allocated pages. thus when the
+    process struct goes out of scope, the page tables are reclaimed.
+
+commit eee205a1aa4dbd4e9080398be06a0384ee10f8f3
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Thu Jan 22 12:50:12 2015 -0500
+
+    finish test user program
+
+    uses its own page tables now.
+
+commit 77bb8f3ddd168e95bea2b7951ed97382efb0e799
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Thu Jan 22 13:05:50 2015 -0500
+
+    whoops
+
+commit 64c545e1227a47cd047a5aa41e257f34a8387597
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Thu Jan 22 14:01:34 2015 -0500
+
+    more interesting test program
+
+    reschedule after syscall, terminate if page fault
+
+commit 357e037f6e8c9f2487c39fce4d6beb897932284a
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Thu Jan 22 15:26:20 2015 -0500
+
+    always switch page maps during context switch
+
+commit 2857855a2774025a2be6a5236c49ced816c4005f
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Thu Jan 22 15:37:41 2015 -0500
+
+    ucookie -> pid
+
+commit 19ee6ffbb2a0706e341df96bfe64f7cb45c831ce
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Thu Jan 22 15:53:34 2015 -0500
+
+    processes
+
+    reclaim memory from killed procs using GC(). cool!
+
+commit 2c38b0c06ef06f8996e72fef66ca98a4a6eefa27
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Fri Jan 23 10:08:26 2015 -0500
+
+    x
+
+commit d025305e131ab4e1d45698c07e300d9f72a1e2b6
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Fri Jan 23 10:46:52 2015 -0500
+
+    external user progs
+
+    will include them in the kernel using bin2go.sh
+
+commit 79ee86d7d34900996d59c0e18ee1a065d56d70c8
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Fri Jan 23 11:39:18 2015 -0500
+
+    whoops
+
+commit 8ec240a08ecb401591c66d4b6721703599779e8b
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Fri Jan 23 12:49:57 2015 -0500
+
+    glue to include user binaries in kernel
+
+commit 814f7e20607c23ef98b7d5906fbde56db9efc9d5
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Fri Jan 23 19:33:35 2015 -0500
+
+    fix evil non-deterministic bug
+
+    because the go kernel runs in ring 0 and grows its own stack, the stack while
+    handling a timer interrupt may not be mapped in every process. thus, during a
+    context switch, the ret instruction in the lcr3 function faults. because the
+    stack is no longer valid, a triple-fault/reboot results.
+
+    one fix is to inline lcr3. that way the stack of the interrupted task is not
+    used after the new page map is loaded.
+
+commit 8f6094387dede531b61a46fbf344bb03da756e97
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Fri Jan 23 19:39:52 2015 -0500
+
+    use the IST for double-faults
+
+    the IST is an awesome feature only available in long-mode. it makes the
+    processor switch stacks unconditionally, regardless of new/old privilege level.
+
+    thanks to the IST, buggy kernel code or odd kernels that grow their own stacks
+    don't triple-fault, but helpfully double-fault.
+
+commit 311b76b148c5828841f322a8780f849fef719bf1
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Fri Jan 23 19:44:31 2015 -0500
+
+    small bugs, debug code
+
+commit 1409579d88b7da6337d98acfb2fd984fc747389c
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Mon Jan 26 19:35:57 2015 -0500
+
+    fix write
+
+    panic tracebacks seem to work now
+
+commit a5a9d469f5e63b904b81d81754933b5912fea173
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Fri Jan 23 23:30:39 2015 -0500
+
+    elf user programs
+
+    any elf object in user/ will be inserted into the kernel as an exec'able
+    binary.
+
+    it would be nice to strictly separate address ranges of kernel and user
+    programs.
+
+commit db6146037f35fb5551a73b6470b2f097ff032704
+Author: Cody Cutler <ccutler@csail.mit.edu>
+Date:   Tue Jan 27 22:45:50 2015 -0500
+
+    during boot, don't allocate over kernel's elf header
+
+commit cb7a3a0c7cece65edb64b84dd7fc918308aaf587
+Merge: a5a9d469f5 db6146037f
+Author: Cody Cutler <ccutler@csail.mit.edu>
+Date:   Tue Jan 27 22:54:59 2015 -0500
+
+    Merge branch 'test'
+
+commit 332fd08304791bad133b20e701c271355824e3a5
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Wed Jan 28 09:39:35 2015 -0500
+
+    move pmap stuff to pmap.go
+
+commit 8b3aed756594ec41af10e42c878c05878ef27292
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Wed Jan 28 10:00:39 2015 -0500
+
+    newlines
+
+commit fcd8521060e78927edc495a53f8f20b07e52679a
+Merge: 8b3aed7565 cb7a3a0c7c
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Wed Jan 28 10:00:51 2015 -0500
+
+    Merge branch 'master' of g.csail.mit.edu:biscuit
+
+commit d14a07795fbfeb289f67a0ff02b0eb4eca9c3f40
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Wed Jan 28 11:07:33 2015 -0500
+
+    remove Death()
+
+commit 8cceed5a89a84ab34ee4a5e38b0a8c92715b225d
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Wed Jan 28 11:08:59 2015 -0500
+
+    reduce unsafe casts
+
+commit 8c4ae639a1b863c847078de09a3249077265a254
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Thu Jan 29 18:07:07 2015 -0500
+
+    errors to stderr
+
+commit af4dfcf8673af71c3c914043debc982c6a5a0390
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Thu Jan 29 18:15:00 2015 -0500
+
+    SMP
+
+    find and initialize cpus. the test boots up all found cpus (controllable with
+    CPUS env variable) each of which print a hello message, spin for a moment, and
+    then fault to make sure the IDT/GDT are properly setup.
+
+    there is no synchronization yet. next step is to make the runtime/kernel
+    thread-safe.
+
+commit 5bb766a7a62373bb9e444fa9852f3d26e4ea82f5
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Fri Jan 30 10:18:19 2015 -0500
+
+    reduce unsafe casts
+
+commit 0a2a840b325d1a9af400eb66f5d9a1a401a8775f
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Fri Jan 30 11:21:38 2015 -0500
+
+    disable newlines for explicit panic
+
+commit 4fcb3dc4cfefff837f3bd453d988314e104d91f8
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Fri Jan 30 12:36:59 2015 -0500
+
+    setup AP stacks
+
+    enter the terrible world of multicore
+
+commit 3af60b7bc16a62b07aaefc4089da7c5d65ef1d30
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Fri Jan 30 15:32:01 2015 -0500
+
+    initialize lapic/TSS on APs
+
+    shuffle stuff around so APs can reuse init code
+
+commit ba56baba55a83523ba96b67faa97578208fc3db4
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Sun Feb 1 15:44:08 2015 -0500
+
+    serial console driver
+
+    now i can actually debug biscuit over slow connection remotely.
+
+commit cffb62b5e4b509ab76eb134641d137bfd9c18217
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Sun Feb 1 15:45:18 2015 -0500
+
+    don't set G (granularity) in segment descriptors
+
+    although segment limits are mostly ignored in long mode, the TSS limit is not
+    ignored since it is necessary to determine whether or not there is an IO bitmap
+    (bitten by the damn IO bitmap again!)
+
+commit 0cb270d196f2669a18b244c794294db067fb6917
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Mon Feb 2 19:01:02 2015 -0500
+
+    serial console by default
+
+commit 53896135ff6a10c16c3f68cca952ebf21ed258d0
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Mon Feb 2 19:04:30 2015 -0500
+
+    increase stackguard to 768 bytes
+
+    the largest stack size of all trap paths is > 512 bytes
+
+commit 52007cc98cb8963c1f63ef69cd35112d77b9daf3
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Mon Feb 2 19:04:18 2015 -0500
+
+    parallel runtime scheduler
+
+    there were many bugs. discovered a bug in the plan9 C compiler and the plan9
+    assembler on the way.
+
+    now kernel parallelism should be easy. scheduling code desperately needs
+    cleanup; will do this soon.
+
+    hack_futex has been band-aid fixed -- need to fix it properly later.
+
+commit 33ae3648201e48c0e259fe6dff15b1af6aaca4cf
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Mon Feb 2 20:30:09 2015 -0500
+
+    raise GOMAXPROCS and NTHREADS to 24
+
+commit 39dad4bd6d345346414167243e5e091da239aeb8
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Wed Feb 4 15:43:46 2015 -0500
+
+    evil bugfixes, fix futex
+
+    all bugs were races in the scheduler/trap handling. they were hidden by a slow
+    implementation of futex. there were 3 races:
+
+    1- since go code is in ring 0, timer interrupts during go code are taken on go
+    stacks. consider the following events on CPU1:
+            - takes a timer interrupt while executing go process alpha
+            - acquires the scheduling lock
+            - marks alpha as runnable
+            - finds and marks a new process as running
+            - releases the lock
+    then before CPU 1 has time to iret to the new process and stop using alpha's
+    stack, CPU 2 starts running alpha and itself takes a timer interrupt
+    overwriting CPU 1's stack.
+
+    solve this by using the IST to always take timer interrupts on kernel stacks.
+    alternatively, we could release the lock in trapret() once the stack will no
+    longer be used, but it seems better to always take traps on the interrupt stack
+    anyway.
+
+    2- user application page faults. trap handler running on CPU 1 posts exception
+    to go kernel, which is running on CPU 2, and go kernel immediately responds by
+    terminating the application, reclaiming the page tables while CPU 1 is using
+    them.
+
+    solve this by changing to the kernel's page tables whenever posting a trap that
+    may result in application termination.
+
+    3- when a process on CPU 1 is trying to go to sleep for a small amount of time
+    and marks itself sleeping, another CPU wakes and starts running the process
+    before CPU 1 has yielded and stored the process' state.
+
+    solve this by marking a process as sleeping in the timer interrupt, not
+    futex(). thus a CPU trying to wake processes up will not mark the process as
+    runnable yet.
+
+    in conclusion, i am desperately trying to simplify the design!
+
+commit 0c537359567f46404c57e008ed45e8d4e6d9b840
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Wed Feb 4 17:07:19 2015 -0500
+
+    actually fix futex. whoops
+
+commit 6e83cb549a8055be786d1ce7bc268369cf379d04
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Thu Feb 5 14:22:52 2015 -0500
+
+    fix direct mapping
+
+    funny bug. didn't discover it earlier because dmap() is currently only used to
+    map physical memory under 1G.
+
+commit 333420ea8e72883878e542b5b1271add29485382
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Thu Feb 5 15:36:26 2015 -0500
+
+    fix elf loading
+
+    was accidentally filling every page of each segment with the first page in the
+    segment.
+
+commit 4f03c124a56f2eef79bac417c21fb7c55d1fd7d5
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Thu Feb 5 15:40:50 2015 -0500
+
+    write syscall
+
+commit 8af1a65e6794ba21365d3aa08172c600f3b3317f
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Thu Feb 5 16:06:29 2015 -0500
+
+    exit() and fault program
+
+commit b3f3d16dd6868385cff7eebd7bff71591191276d
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Thu Feb 5 17:36:11 2015 -0500
+
+    don't destroy process
+
+    needs to be fixed correctly later
+
+commit f27fc81623c3456ff0ae11c9edb02f2ac12e1af7
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Thu Feb 5 21:13:58 2015 -0500
+
+    try to make gcc link user programs at high addresses
+
+    use PIC to encourage the generated asm to use rip-relative addresses, then the
+    instructions don't need more than 4 bytes to encode addresses.
+
+commit c03e7c0fa946e8a080bfb7cd41982626a3bbc1d1
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Thu Feb 5 21:27:54 2015 -0500
+
+    fix elf loading again
+
+commit abdd5cb51a7897babd792daaf1a30d855e6ebc58
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Thu Feb 5 22:13:07 2015 -0500
+
+    primitive user-space printf
+
+commit 4d563bdc5399b29ba0aed5b3996611411488c768
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Fri Feb 6 14:54:11 2015 -0500
+
+    more printf
+
+    yes, i know -- on to more important things.
+
+commit 2e1f4e35a07100b8f9121546a46680ca5bafc999
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Fri Feb 6 16:07:01 2015 -0500
+
+    don't use pointers to slices
+
+commit f8f458eb818e680476f6b4a23dbb8e6634cffd31
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Fri Feb 6 16:09:15 2015 -0500
+
+    don't give user programs VGA anymore
+
+commit f9b749926a13226ae7cb9ca7eb86f5ed7dea444d
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Fri Feb 6 16:55:25 2015 -0500
+
+    wrap user main()
+
+commit 517ccb27973338720f056dc0e19ad3b0dcb97dec
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Fri Feb 6 18:47:38 2015 -0500
+
+    use IST for syscall and page faults
+
+commit 27a8fd492d5c8cd9bdd4be2452c37a199f90eccb
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Tue Feb 10 00:32:44 2015 -0500
+
+    fix memprofiling
+
+commit 550effd66d4a138ed246c98198e5935569e85605
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Tue Feb 10 19:43:10 2015 -0500
+
+    specify qemu binary
+
+commit 735431be5d22041d282e226ff9367dfd72142c3e
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Tue Feb 10 20:13:11 2015 -0500
+
+    yield in usleep instead of spinning
+
+commit 0b16699f931fa679ec056e0fdf1b6d2c4a2b61d5
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Tue Feb 10 19:58:15 2015 -0500
+
+    stack check invlpg
+
+commit 982ce795749af1fe1c23f4e6dad5e03e74449a6a
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Tue Feb 10 20:10:26 2015 -0500
+
+    stack dump goroutine too, in case it used onM
+
+commit 4d44bd0305fd4e497963415198ec4bde5a349913
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Tue Feb 10 20:11:32 2015 -0500
+
+    memory checker (disabled)
+
+    sanity checks pages allocated before giving them to go. it writes the page with
+    a poison value and then verifies that the page retained the poison value.
+
+commit b7d4fd1d30f9ebfd3cec4c5893a0969692a0a204
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Tue Feb 10 20:14:59 2015 -0500
+
+    halt other cores when any goroutine calls exit()
+
+commit f645ae8782478b13033c123fb8524050b54fbd08
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Tue Feb 10 20:18:24 2015 -0500
+
+    make gothrow work again, now that panic works
+
+commit e33b2951d9eaa6977ab0cd04774a5b743f88c366
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Fri Feb 6 18:48:53 2015 -0500
+
+    copy-on-write fork
+
+    pretty cool! much easier to write when the forking code isn't itself
+    interrupted by a page fault.
+
+commit 4243a217f81922e2bf844aa39dd2844e71b68d43
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Fri Feb 6 18:59:30 2015 -0500
+
+    getpid for tests
+
+commit fb559b6811b566960600daa383f55a2c534ed3d6
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Tue Feb 10 19:56:10 2015 -0500
+
+    horrible goddamn bug
+
+    go uses SSE non-temporal moves for fast copying and zeroing of newly allocated
+    objects. if you are very unlucky, a zero-initializing go routine may be context
+    switched after a copying go routine. since my scheduler did not save/restore
+    FPU/SSE state, the SSE registers used were not saved/restored on a context
+    switch.
+
+    the end result was newly allocated maps having segments of 128 non-zero bytes
+    and copied objects having 128 byte segments that were zeroed.
+
+    save restore SSE state, and fix a few other bugs like serial access to mmaps,
+    trap queue, and syscalls with locks (i'll remove these coarse locks next).
+
+    also do go routine stack checks manually in C stubs -- the stack check inserted
+    by the compiler panicks if any C code runs on a go routine stack. this makes me
+    nervous because i'm not exactly sure why...
+
+    goodbye four days of my life
+
+commit be7c14228aa9ff8b07057a0be0aee8e22ec5556c
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Wed Feb 11 10:44:16 2015 -0500
+
+    go red/black tree module
+
+    useful for debugging
+
+commit 22e233447dd3b04efa6598262bd43b5abda6e6d6
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Wed Feb 11 12:52:21 2015 -0500
+
+    remove paranoia code, better fork test
+
+commit 19f411b35a6312db039bd8cfa47a7e93edc0f826
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Wed Feb 11 12:52:58 2015 -0500
+
+    script to help dump important data in gdb
+
+    for some reason, it seems that gdb doesn't know the addres of some of my C
+    symbols.
+
+commit b8c90090d3a8ff80e240c92c6b448123083dac8a
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Thu Feb 12 11:40:39 2015 -0500
+
+    zero bss correctly in bootloader
+
+commit 45823c67235655908504cff858bbc1560d1a6d6e
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Thu Feb 12 11:53:47 2015 -0500
+
+    lockfree per-cpu interrupt circular buffers
+
+commit d0bef61078392506dc6a972dfdbf8a67f1eedc87
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Thu Feb 12 17:18:42 2015 -0500
+
+    remove more paranoia
+
+commit bda6cd8ad16cd0a4bbaf019764fc2744e13b9081
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Thu Feb 12 17:20:06 2015 -0500
+
+    always switch to kernel page map
+
+    this is ok because CPUs will always switch pmaps anyway as the interrupting
+    process cannot be serviced immediately.
+
+commit 759b2129e5926e038a247bcec7e950193c6c4855
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Thu Feb 12 18:30:06 2015 -0500
+
+    serialize syscalls, parallel page faults
+
+commit a1677af02ec8c568b49357ff12c528c0e40be807
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Thu Feb 12 19:10:38 2015 -0500
+
+    fork for many moons
+
+commit e01df541a9e4a43e767795771e4a5a6ee624aed1
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Thu Feb 12 19:41:15 2015 -0500
+
+    open syscall
+
+    start fs stuff
+
+commit d74ef69d3767646087bf1ec13988af9151af6764
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Thu Feb 12 21:34:13 2015 -0500
+
+    fs interface
+
+    need to figure out on-disk data format
+
+commit 4b19b4e7b5c3ec511f1094d78c44cee4a4e6d032
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Thu Feb 12 21:38:05 2015 -0500
+
+    fstest.c
+
+commit 00c61ace6b20cf3175d1104bfe1d4be52c013be0
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Fri Feb 13 14:50:22 2015 -0500
+
+    show serial console when using vga too
+
+commit 6cdc5a371a01a03ea35586b020388e0d6536f414
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Fri Feb 13 15:03:36 2015 -0500
+
+    irqs
+
+    prep for ata pio driver
+
+commit 5c0351af5230d7b8b13635ee0402a5359372ba18
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Sun Feb 15 20:47:30 2015 -0500
+
+    ide disk driver and ide server go-routine daemon
+
+    kernel code submits requests for ide reads/writes through a channel. its very
+    straight-forward! we get kernel thread sleeping/wakeup and safe queue access
+    for free via go channels. see ide_test() for example code demonstrating how to
+    use the ide daemon.
+
+commit d88b83568749b086e731f03d965081637808ae64
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Mon Feb 16 07:27:27 2015 -0500
+
+    x
+
+commit 9dad0d2841b557f0192313614a60ce3320d75f8a
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Mon Feb 16 09:41:21 2015 -0500
+
+    simplify trap/yieldy
+
+commit f8659af6378f3220da230716cf79d86979fca9a4
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Mon Feb 16 14:21:44 2015 -0500
+
+    block cache
+
+commit 56f76daebb10ee1718620b75ce6267e5962f20bc
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Mon Feb 16 14:26:03 2015 -0500
+
+    don't hold block cache lock over ide read for cache miss
+
+commit 91bb9ae50b42de52d49343cc13fe0a73c540b8e8
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Mon Feb 16 16:25:01 2015 -0500
+
+    fix roundup
+
+commit 6015ceede51000dedb3b91ae6f885a8ac280fb88
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Mon Feb 16 17:49:52 2015 -0500
+
+    build a biscuit fs
+
+    don't assume that the fs is on a separate disk, making it easier to boot
+    biscuit on real hardware. therefore we need a mechanism to figure out where the
+    fs blocks start. instead of using a real MBR, just write the bits into a
+    special variable in the go kernel binary.
+
+commit 4ca384e0e327d42a2352585f9dcfe36775e0d55a
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Mon Feb 16 18:28:32 2015 -0500
+
+    don't try to take spinlock in hack_exit()
+
+commit b08febab3f62c125894f78be5b7901278a0fbf14
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Mon Feb 16 18:40:25 2015 -0500
+
+    default superblock values
+
+commit bab4bddca321f0370835fe45e7ae4949905b2414
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Mon Feb 16 19:00:34 2015 -0500
+
+    basic superblock/inode decoding
+
+commit db9f6e66310c134eb6bd008451435389c62daff1
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Tue Feb 17 12:09:34 2015 -0500
+
+    inode/superblock decoding
+
+    avoid using unsafe pointer casts and decode the bits from the underlying block,
+    which forces me to use getters/setters (ugh).
+
+    don't segregate free blocks into inode/data blocks. now inodes are identified
+    by a block/offset pair since four inodes are packed into one block.
+
+commit 40a8b6d7fc07abcb952bee2752537f0774952aea
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Tue Feb 17 12:49:04 2015 -0500
+
+    simplify futex shit again
+
+    there is less concurrency now as the futexlock is held across the soft
+    interrupt to yield, but the code becomes simpler. seems to make little
+    difference for performance.
+
+commit 83b41c48683d621b52e15c946736ea5e2537b51b
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Tue Feb 17 15:23:07 2015 -0500
+
+    block allocator
+
+commit f4b41627b37d40e21260073b27e54f5f0f957876
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Tue Feb 17 16:43:02 2015 -0500
+
+    put first fs block number in mbr intead of go kernel binary
+
+commit ce66c861ad692f1d4e2ff751b1cc9903586691e3
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Tue Feb 17 18:39:48 2015 -0500
+
+    directory entries, kernel ls
+
+commit 123c861e7cc0d60ca9f92c5303d06d74e3fbc2ed
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Tue Feb 17 18:45:22 2015 -0500
+
+    inode size cannot be in blocks
+
+commit 6fe47d117c609fc9f48439dcd0dd3972b1112665
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Wed Feb 18 14:35:50 2015 -0500
+
+    mkbdisk.py
+
+    builds a biscuit fs (with bootloader and kernel image) from the specified
+    directory, recursively adding all directories and files.
+
+commit 8bec3cf0c80e2ff467ac3b4af27cf622c7e782da
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Wed Feb 18 14:35:03 2015 -0500
+
+    build biscuit fs from fsdir/, recursively ls in kernel
+
+commit 36b0c110cb1e0f90539d7e0d15d822b600df3463
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Wed Feb 18 14:53:38 2015 -0500
+
+    write freeblocks too
+
+commit d606230fa0afffde986396724cc35d166167705a
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Thu Feb 19 11:19:13 2015 -0500
+
+    colored text for tests
+
+commit e691286fa84c0b8114a6f1e124be63834d36ec2d
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Thu Feb 19 11:20:18 2015 -0500
+
+    readonly sys_open
+
+commit c2d933990eae023d87b3e02e0fe7d7612935670c
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Thu Feb 19 11:32:16 2015 -0500
+
+    string support in printf
+
+commit 3ed45876c6b8a14ad4688bc205568a0e51cff77e
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Thu Feb 19 12:43:44 2015 -0500
+
+    sys_read
+
+commit 352c56e05a65e17579e8e403bbb670b33421ecb9
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Thu Feb 19 12:49:02 2015 -0500
+
+    x
+
+commit 0630baa614c62ca7b31d142ad3a53ebca6e9a5f0
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Thu Feb 19 12:56:27 2015 -0500
+
+    increment fd offset too
+
+commit d325b55ec73e51315d2a563f98827d8539e4073b
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Thu Feb 19 13:01:40 2015 -0500
+
+    x
+
+commit 2d6c77a15ad0642021484501058d997ea2c43480
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Thu Feb 19 13:38:41 2015 -0500
+
+    don't pass around inode block offset
+
+commit 6ed7efe6a368f061178b504cad6ca63462465f6a
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Thu Feb 19 18:46:16 2015 -0500
+
+    remove syscall lock, parallel syscalls
+
+    seems ok with 1, 6, and 20 cpus
+
+commit 839915f98b3111fccd64ecc43be7e735ece4e487
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Fri Feb 20 11:13:47 2015 -0500
+
+    concurrent fs syscalls
+
+    we only have open/read so far, but now i have a concurrency story.
+
+commit 863e1c6916657a17f7f174467f460e739173a6db
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Fri Feb 20 14:50:04 2015 -0500
+
+    typo
+
+commit 5dec31f2c7f895c08d5d492c221e946426aad4aa
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Fri Feb 20 16:03:47 2015 -0500
+
+    user snprintf
+
+commit ff4fdc1cb5959b0aa30695e202eba0b9c8845afe
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Fri Feb 20 17:16:56 2015 -0500
+
+    concurrent sys_write
+
+    and user/fswrite.c to test it. next up is mkdir(), then logging!
+
+commit 2396b3e993fd535c2cbc75791d58aef289955fb4
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Mon Feb 23 10:28:19 2015 -0500
+
+    user mkdir/errx/vprintf
+
+commit 365f4220c87bb2a1fc652607ab372bd36d13b3ea
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Mon Feb 23 11:10:26 2015 -0500
+
+    share locks in file-tree lock nodes to sync access to inodes
+
+commit 5115d48cad329ec96dd5778f8531fa0c930ad8f4
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Mon Feb 23 13:18:34 2015 -0500
+
+    mkdir, O_CREAT, and user test programs
+
+commit b37c4692d42a6e6a9e0ddc36ad951c640f4631fa
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Mon Feb 23 15:47:27 2015 -0500
+
+    make halt work
+
+commit 7521f0925ccaee802506d4314996499644964737
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Mon Feb 23 16:20:30 2015 -0500
+
+    fix padding in mkbdisk.py
+
+    the old code adds an empty block if kernel is divisible by block size
+
+commit c14beb90191e74163c20c48596a5eed576fbc664
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Mon Feb 23 19:23:22 2015 -0500
+
+    journaling fs
+
+    neat! fs syscalls talk to the logging daemon for admission control and
+    committing.
+
+    haven't written the recovery procedure yet. poorly tested so far too.
+
+commit ee492129eeb72a404980588876590f19781a1dd5
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Mon Feb 23 22:55:58 2015 -0500
+
+    recovery routine
+
+commit 8f9858db4b9aa7e0b47ec67463c71d4603c8b254
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Tue Feb 24 10:42:40 2015 -0500
+
+    user argc/argv
+
+commit fb3a928406d9eca048f045d1e266eeba30d11f74
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Tue Feb 24 11:02:39 2015 -0500
+
+    only acquire fs log space and lock files if writing to fs
+
+commit b2a77037f54130bcc1c443c9b534bf2691b76aa5
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Tue Feb 24 11:07:32 2015 -0500
+
+    note superfluous disk read in log commit
+
+commit 27d7ef1e9736221ce200b089faaa7aa5903297ba
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Tue Feb 24 11:12:04 2015 -0500
+
+    move PIC code out of fs.go
+
+commit 3af0f571d394d6c0fd0cb15a01aa9c6e0ec7d2b1
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Tue Feb 24 11:44:29 2015 -0500
+
+    fix deadlock bug which i just introduced
+
+    must get log admission before locking any files, obviously. if a thread blocks
+    on log admission but has a file locked, a thread with log admission may then
+    block on the file too and thus will never relinquish log access.
+
+commit d102b8e80eef63c72526ec8755e048d42b04ecf5
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Tue Feb 24 11:46:12 2015 -0500
+
+    remove panic; this is not an error
+
+    two concurrent syscalls may allocate inodes on the same block (though the
+    syscalls will then serialize via inode lock).
+
+commit 376d67e38b5f73fc15212ec70493f4282f457402
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Tue Feb 24 12:39:40 2015 -0500
+
+    x
+
+commit 487c35cd43b66071f54f9740830594aa63185965
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Tue Feb 24 17:06:37 2015 -0500
+
+    block cache daemon
+
+    no inode cache yet which is required to prevent deadlocks during directory
+    entry creation -- thus fsmkdir test fails.
+
+    i will kill the lock tree once inode cache is ready.
+
+commit 344a652981645d7d99261d3c5a68a52f62705b3d
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Wed Feb 25 14:44:57 2015 -0500
+
+    don't do commit protocol if the log is empty
+
+commit a1615219e9787a113023dc362c57823b9c144e89
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Wed Feb 25 09:22:06 2015 -0500
+
+    read-only per-inode daemons/inode cache
+
+    not sure what the termination story is yet.
+
+commit ca3a52f3c937f6d4aa9293ae0a31b0c546d3499b
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Wed Feb 25 14:54:39 2015 -0500
+
+    let fs_read return an error
+
+commit 3df7a412fc54356a64fc6664ecf2fa8ebcc6c352
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Wed Feb 25 16:47:37 2015 -0500
+
+    finish conversion to per-inode daemons
+
+commit 82b3d49c46a0ec0205fdf83a552b28238527eef9
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Thu Feb 26 11:11:59 2015 -0500
+
+    init fslog before trying to recover
+
+commit 8a8e8812c0f0e60635be3c0e3699d4ef31c6f242
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Thu Feb 26 12:36:49 2015 -0500
+
+    simplify file read/write
+
+commit e516367eb55ac38786b8244e59ccf9391eb27c1b
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Thu Feb 26 17:24:40 2015 -0500
+
+    whoops
+
+commit 122d4b09b7da13a550284b922ff6e864223d1b74
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Fri Feb 27 13:40:31 2015 -0500
+
+    bigwrite test
+
+commit 8ebea76b92880dbe7f843b3f9b2d9b5a83dbc257
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Fri Feb 27 14:42:58 2015 -0500
+
+    waste a bunch of time doing very little
+
+    rtm would scold me
+
+commit 13ecd031e4ddbee963e192990273d9195d6261cd
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Fri Feb 27 17:33:59 2015 -0500
+
+    start link, simplify
+
+commit f15439a2bd15c985f72efc0949d59cd02651aff5
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Fri Feb 27 17:51:01 2015 -0500
+
+    prepare to support inode freeing
+
+commit 361844a92a804ebec096bb1f768e24e9c052949d
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Sun Mar 1 21:43:21 2015 -0500
+
+    parition user/kernel address completely
+
+commit b5dca78770826c0c64b283414df6dcf9fbaaf5af
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Sun Mar 1 22:13:49 2015 -0500
+
+    remove pointless elf_t field
+
+commit 1bfa6ddee9947bf0026fa2da77dbe6b480c87771
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Sun Mar 1 22:25:31 2015 -0500
+
+    sys_execv
+
+    poorly tested since my user binaries are large enough that they require
+    indirect block support in the fs which is not yet implemented.
+
+commit 4950d16cc2aabddafaa34fd1a0e4ee3a21197b95
+Author: Cody Cutler <ccutler@csail.mit.edu>
+Date:   Mon Mar 2 08:06:55 2015 -0500
+
+    indirect block support in mkbdisk.py
+
+commit d20e9bf1fad5c0b775649bc0cb32025832c14a7e
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Mon Mar 2 08:09:09 2015 -0500
+
+    fslink.c
+
+    ugh
+
+commit ff18151272a931bb0bb52c8ffa7ad6f8ad674a40
+Merge: d20e9bf1fa 4950d16cc2
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Mon Mar 2 08:09:33 2015 -0500
+
+    Merge branch 'master' of g.csail.mit.edu:biscuit
+
+commit 07bf43d8b4fffaa34c729afa9698f3784f5cfed6
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Mon Mar 2 09:09:01 2015 -0500
+
+    dont forget indirect block
+
+commit 7b56b6c4587cc573bc88974d174aea90b6dc166f
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Mon Mar 2 11:03:29 2015 -0500
+
+    indirect block support for files
+
+commit 5c2b3f7cfcf39eb4fe2b7a89e3e9a228863eb70d
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Mon Mar 2 11:32:03 2015 -0500
+
+    run user programs from file system instead of gobins
+
+    still keep gobins, since it is great for putting arbitrary binaries in the
+    kernel (like AP proc bootup code).
+
+commit 296e54ea1dee3f7586e0f02f3e7ca06302eaad3f
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Mon Mar 2 11:57:09 2015 -0500
+
+    throw away worthless sections
+
+commit 45dd96e849a076b96079b5c49b038d2bdcbeb610
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Mon Mar 2 17:11:13 2015 -0500
+
+    resolve to keep .gitignore up-to-date
+
+    to prevent me from forgetting to add files
+
+commit 1bc0fe49805a37027fda680c118fa0a517833b1c
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Mon Mar 2 17:28:30 2015 -0500
+
+    inode transactions via inode daemons
+
+    the basic idea is that some transaction operation is sent to one of the
+    involved idaemons. this idaemon operates on the inode state and then sends (and
+    waits for completion of) a new operation to another involved idaemon which may
+    itself generate and send a new operation, etc. if the transaction fails
+    somewhere, each idaemon cleans up and returns the error.
+
+    the main challenges with this design are avoiding these deadlocks:
+
+    - when simultaneously traversing up and down the directory tree, two idaemons
+      may both block sending to each other. solve this by having one
+      channel/goroutine daemon per direction (however i think i can make traversing
+      up the tree unnecessary altogether, so this is not yet implemented).
+
+    - when handling a transaction operation that results in an idaemon sending
+      operations to itself. instead of using a goroutine per operation per idaemon,
+      deal with this by partitioning the operations into simple/transactional
+      operations. both classes are handled by a separate goroutine. transactional
+      operations can only generate/send simple operations while simple operations
+      cannot themselves generate any operations. (however, directory tree
+      traversing is a special case: deadlock cannot occur since each idaemon
+      forwards operations its children instead of sending an operation to an
+      arbitrary idaemon).
+
+commit 2850453fd408d39e8c827d4667b9af46a9fb29cf
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Tue Mar 3 10:48:32 2015 -0500
+
+    fs_link via simple inode daemons; no general transactions
+
+    for link, we can avoid locking both inodes simultaneously and therefore don't
+    need to support general transactions over inodes.
+
+    link is the only xv6 fs operation that requires atomically modifying two inodes
+    (xv6 does not provide rename).
+
+commit 7d44082df7b88d791a3912e17ae5b58c12e76087
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Tue Mar 3 11:27:29 2015 -0500
+
+    only prepend cwd if specified path is relative
+
+commit 5e9c8e17649baa07f14dead5118cf188b2e9d160
+Author: Cody Cutler <ccutler@mat.lcs.mit.edu>
+Date:   Tue Mar 3 14:07:07 2015 -0500
+
+    sys_unlink
+
+    also, unshittify directory entry lookup/insertion/deletion code

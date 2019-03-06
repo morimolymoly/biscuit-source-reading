@@ -1,0 +1,56 @@
+biscuit/.gdbinit
+biscuit/.gitignore
+biscuit/GNUmakefile
+biscuit/bin2go.sh
+biscuit/boot.S
+biscuit/bootmain.c
+biscuit/chentry.c
+biscuit/elfutil.py
+biscuit/fs.go
+biscuit/fsdir/another/you-found-me
+biscuit/fsdir/boot/bsd
+biscuit/fsdir/boot/uefi/readme.txt
+biscuit/fsdir/clouseau.txt
+biscuit/fsdir/hi.txt
+biscuit/gdb-helper.py
+biscuit/main.c
+biscuit/main.go
+biscuit/mkbdisk.py
+biscuit/mpentry.S
+biscuit/pmap.go
+biscuit/prepbins.py
+biscuit/rbtree.go
+biscuit/stamp.py
+biscuit/syscall.go
+biscuit/tests.go
+biscuit/user/.gitignore
+biscuit/user/fault.c
+biscuit/user/fork.c
+biscuit/user/fscreat.c
+biscuit/user/fsmkdir.c
+biscuit/user/fstest.c
+biscuit/user/fswrite.c
+biscuit/user/getpid.c
+biscuit/user/hello.c
+biscuit/user/litc.c
+biscuit/user/litc.h
+biscuit/user/littypes.h
+biscuit/x86.h
+
+
+
+src/cmd/dist/build.c
+src/cmd/ld/lib.c
+# src/runtime/asm_amd64.s
+src/runtime/mprof.go
+# src/runtime/os_linux.c メモリ初期化とかCR3周りとか
+# src/runtime/os_linux.go cgoでwrapしてる
+src/runtime/panic.c
+src/runtime/panic.go
+src/runtime/proc.c
+# src/runtime/rt0_linux_amd64.s _rt0_hackを呼ぶように
+src/runtime/stack.h
+src/runtime/stubs.go
+# src/runtime/sys_linux_amd64.s
+src/runtime/traceback.go
+src/syscall/asm_linux_amd64.s

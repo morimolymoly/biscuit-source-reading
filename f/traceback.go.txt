@@ -1,0 +1,17 @@
+diff --git a/src/runtime/traceback.go b/src/runtime/traceback.go
+index 24dc3eea95..6f7ac5fea3 100644
+--- a/src/runtime/traceback.go
++++ b/src/runtime/traceback.go
+@@ -57,7 +57,11 @@ func tracebackinit() {
+ 	morestackPC = funcPC(morestack)
+ 	mstartPC = funcPC(mstart)
+ 	newprocPC = funcPC(newproc)
+-	rt0_goPC = funcPC(rt0_go)
++	if hackmode != 0 {
++		rt0_goPC = funcPC(rt0_go_hack)
++	} else {
++		rt0_goPC = funcPC(rt0_go)
++	}
+ 	sigpanicPC = funcPC(sigpanic)
+ }
+ 
